@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Französisch – Antonyme (offline)</title>
+<style>
+  :root { --gap: 14px; --cardW: 240px; --radius: 12px; --shadow: 0 8px 20px rgba(0,0,0,.08); }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 16px/1.45 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial; background:#f7f7fb; color:#222; }
+  header { padding: 18px 16px; background:#fff; position: sticky; top:0; z-index:1; border-bottom:1px solid #ececf3 }
+  h1 { margin:0 0 6px; font-size: 20px; }
+  .cols { display:grid; gap: var(--gap); padding: 18px; grid-template-columns: repeat(1, minmax(0,1fr)); }
+  @media (min-width: 900px) { .cols { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+  .col { background:#fff; border:1px solid #ececf3; border-radius:12px; padding:12px; }
+  .col h2 { margin:6px 6px 10px; font-size:16px; opacity:.8 }
+  .wrap { display:flex; flex-wrap:wrap; gap: var(--gap); }
+  .card { width: var(--cardW); height: 120px; perspective: 900px; }
+  .inner { position:relative; width:100%; height:100%; transition:transform .5s; transform-style:preserve-3d; cursor:pointer; }
+  .card.flipped .inner { transform: rotateY(180deg); }
+  .face { position:absolute; inset:0; backface-visibility:hidden; border:1px solid #e6e6ef; border-radius: var(--radius); box-shadow: var(--shadow); padding:12px; display:flex; flex-direction:column; justify-content:space-between; }
+  .front { background:#fff; }
+  .back { background:#111; color:#fff; transform: rotateY(180deg); }
+  .fr { font-weight:650; font-size:18px; }
+  .de { opacity:.85; }
+  footer { padding: 10px 16px 24px; text-align:center; color:#666; }
+  .pos { font-size:12px; opacity:.7; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Französisch – Antonyme üben (Karteikarten)</h1>
+  <div>Offline, ohne Abhängigkeiten. Klick auf eine Karte zum Umdrehen. Deutsche Übersetzungen sind <strong>wörtlich</strong>.</div>
+</header>
+
+<main class="cols">
+  <section class="col"><h2>Verben</h2><div class="wrap" id="verbs"></div></section>
+  <section class="col"><h2>Nomen</h2><div class="wrap" id="nouns"></div></section>
+  <section class="col"><h2>Adjektive / Adverbien / Sonstiges</h2><div class="wrap" id="adjs"></div></section>
+</main>
+
+<footer>Erstellt für den Unterricht – funktioniert in Chrome, Firefox, Edge, Safari (auch offline).</footer>
+
+<script>
+  const data = [["verb", "accélérer", "beschleunigen", "ralentir", "verlangsamen"], ["verb", "acheter", "kaufen", "vendre", "verkaufen"], ["verb", "aimer", "lieben", "détester", "hassen"], ["verb", "apprendre", "lernen", "oublier", "vergessen"], ["verb", "arrêter", "aufhören", "commencer", "anfangen"], ["verb", "arriver", "ankommen", "partir", "abreisen"], ["verb", "chercher", "suchen", "trouver", "finden"], ["verb", "donner", "geben", "prendre", "nehmen"], ["verb", "émigrer", "auswandern", "immigrer", "einwandern"], ["verb", "monter", "hinaufgehen", "descendre", "hinabgehen"], ["verb", "ouvrir", "öffnen", "fermer", "schließen"], ["verb", "se coucher", "sich hinlegen", "se lever", "aufstehen"], ["verb", "entrer", "eintreten", "sortir", "hinausgehen"], ["verb", "gagner", "gewinnen", "perdre", "verlieren"], ["verb", "naître", "geboren werden", "mourir", "sterben"], ["adj", "content", "zufrieden", "triste", "traurig"], ["adj", "vieux", "alt", "nouveau", "neu"], ["adj", "grand", "groß", "petit", "klein"], ["adj", "cher", "teuer", "bon marché", "billig"], ["adj", "bien", "gut", "mauvais", "schlecht"], ["adj", "froid", "kalt", "chaud", "warm"], ["adj", "ensemble", "zusammen", "séparé", "getrennt"], ["adj", "divorcé", "geschieden", "marié", "verheiratet"], ["adj", "vite", "schnell", "lentement", "langsam"], ["adj", "vide", "leer", "plein", "voll"], ["adj", "courageux", "mutig", "lâche", "feige"], ["adj", "délicieux", "köstlich", "dégoûtant", "ekelhaft"], ["adj", "difficile", "schwierig", "facile", "leicht"], ["adj", "riche", "reich", "pauvre", "arm"], ["adj", "tard", "spät", "tôt", "früh"], ["adj", "long", "lang", "court", "kurz"], ["adj", "possible", "möglich", "impossible", "unmöglich"], ["adj", "premier", "erster", "dernier", "letzter"], ["adj", "joli", "hübsch", "moche", "hässlich"], ["adj", "laid", "hässlich", "beau", "schön"], ["adj", "droite", "rechts", "gauche", "links"], ["adj", "aujourd’hui", "heute", "hier", "gestern"], ["adj", "autrefois", "früher", "maintenant", "jetzt"], ["adj", "avec", "mit", "sans", "ohne"], ["adj", "contre", "gegen", "pour", "für"], ["adj", "devant", "vor", "derrière", "hinter"], ["adj", "maintenant", "jetzt", "plus tard", "später"], ["noun", "la vie", "das Leben", "la mort", "der Tod"], ["noun", "le jour", "der Tag", "la nuit", "die Nacht"], ["noun", "une dame", "eine Dame", "un monsieur", "ein Herr"], ["noun", "un roi", "ein König", "une reine", "eine Königin"], ["noun", "un matin", "ein Morgen", "un soir", "ein Abend"], ["noun", "maman", "Mama", "papa", "Papa"], ["adj", "noir", "schwarz", "blanc", "weiß"], ["adj", "non", "nein", "oui", "ja"], ["adj", "ouvert", "offen", "fermé", "geschlossen"], ["adj", "positive", "positiv", "négative", "negativ"], ["adj", "sur", "auf", "sous", "unter"], ["noun", "un garçon", "ein Junge", "une fille", "ein Mädchen"], ["noun", "un hiver", "ein Winter", "un été", "ein Sommer"], ["noun", "un homme", "ein Mann", "une femme", "eine Frau"]];
+  function $(s){ return document.querySelector(s); }
+  const areas = {verb: $('#verbs'), noun: $('#nouns'), adj: $('#adjs')};
+
+  function cardEl(group, frA, deA, frB, deB) {
+    const root = document.createElement('div'); root.className='card';
+    root.innerHTML = `
+      <div class="inner">
+        <div class="face front">
+          <div class="fr">${escape(frA)} <span class="de">(${escape(deA)})</span></div>
+          <div class="pos">${group==='verb'?'Verb':(group==='noun'?'Nomen':'Adjektiv/Adverb')}</div>
+        </div>
+        <div class="face back">
+          <div class="fr">${escape(frB)} <span class="de">(${escape(deB)})</span></div>
+          <div class="pos">Gegenteil</div>
+        </div>
+      </div>`;
+    root.addEventListener('click', ()=>root.classList.toggle('flipped'));
+    return root;
+  }
+
+  function escape(s){ return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m])); }
+
+  function render() {
+    const by = {verb:[], noun:[], adj:[]};
+    data.forEach(([group, frA, deA, frB, deB]) => by[group].push([frA,deA,frB,deB]));
+    Object.entries(by).forEach(([group, arr]) => {
+      const area = areas[group]; area.innerHTML='';
+      arr.forEach(([frA,deA,frB,deB]) => area.appendChild(cardEl(group, frA,deA, frB,deB)));
+    });
+  }
+  render();
+</script>
+</body>
+</html>
